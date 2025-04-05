@@ -1,0 +1,54 @@
+#include <stdio.h>
+
+int main() {
+    // System parameters
+    float solar_A = 5000; // Solar power in A (W)
+    float load_A = 300;   // Load in A (W)
+    float battery_A = 200; // Battery in A (Wh)
+    float capacity_A = 5000;
+
+    float solar_B = 200; // Solar power in B (W)
+    float load_B = 400;  // Load in B (W)
+    float battery_B = 300; // Battery in B (Wh)
+    float capacity_B = 5000;
+
+    // Step 1: Calculate excess energy in A
+    float excess_A = (solar_A - load_A > 0) ? (solar_A - load_A) : 0;
+
+    // Step 2: Ask user to transfer if excess exists
+    if (excess_A > 0) {
+        printf("Excess Energy Available in A: %.2f W\n", excess_A);
+
+        int user_input;
+        printf("Do you want to transfer energy to Building B? (yes=1 / no=0): ");
+        scanf("%d", &user_input);
+
+        if (user_input == 1) {
+            float max_transfer = (excess_A < (capacity_B - battery_B)) ? excess_A : (capacity_B - battery_B);
+            float transfer_energy;
+
+            printf("Enter the energy to transfer (Max: %.2f W): ", max_transfer);
+            scanf("%f", &transfer_energy);
+
+            // Validate transfer
+            if (transfer_energy > max_transfer) {
+                printf("Error: Transfer amount exceeds allowed limit.\n");
+            } else {
+                battery_B += transfer_energy;
+                excess_A -= transfer_energy;
+                printf("Transferred %.2f W from A to B\n", transfer_energy);
+            }
+        } else {
+            printf("No energy transfer initiated.\n");
+        }
+    } else {
+        printf("No excess energy available for transfer.\n");
+    }
+
+    // Final energy display
+    printf("Final Battery A: %.2f Wh\n", battery_A);
+    printf("Final Battery B: %.2f Wh\n", battery_B);
+    printf("Remaining Excess Energy in A: %.2f W\n", excess_A);
+
+    return 0;
+}
